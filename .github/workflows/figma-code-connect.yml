@@ -1,0 +1,55 @@
+name: Publish Figma Code Connect
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - 'packages/**/**.figma.tsx'
+      - 'packages/**/**.figma.ts'
+      - 'figma.config.json'
+      - '.figmaignore'
+  workflow_dispatch:
+
+jobs:
+  publish-code-connect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22.x'
+          cache: 'yarn'
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Audit Code Connect setup
+        run: yarn figma:audit
+
+      - name: Publish to Figma
+        run: yarn figma:publish
+        env:
+          FIGMA_TOKEN: ${{ secrets.FIGMA_TOKEN }}
+          FIGMA_FILE_ID: ${{ secrets.FIGMA_FILE_ID }}
+
+      - name: Report success
+        if: success()
+        run: echo "✅ Figma Code Connect published successfully"
+
+      - name: Report failure
+        if: failure()
+        run: |
+          echo "❌ Figma Code Connect publishing failed"
+          echo "Please check:"
+          echo "1. FIGMA_TOKEN secret is set and valid"
+          echo "2. FIGMA_FILE_ID secret is set and correct"
+          echo "3. Code Connect files have correct syntax"
