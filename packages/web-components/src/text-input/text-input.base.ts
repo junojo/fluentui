@@ -1,4 +1,12 @@
-import { attr, FASTElement, nullableNumberConverter, Observable, observable } from '@microsoft/fast-element';
+import {
+  attr,
+  FASTElement,
+  nullableNumberConverter,
+  Observable,
+  observable,
+  type Subscriber,
+  Updates,
+} from '@microsoft/fast-element';
 import { ImplicitSubmissionBlockingTypes, TextInputType } from './text-input.options.js';
 
 /**
@@ -11,6 +19,10 @@ import { ImplicitSubmissionBlockingTypes, TextInputType } from './text-input.opt
  * @csspart label - The internal `<label>` element
  * @csspart root - the root container for the internal control
  * @csspart control - The internal `<input>` control
+ *
+ * @fires { Event } change - Fires a custom 'change' event when the value changes and the input loses focus
+ * @fires { Event } select - Fires when the `select()` method is called.
+ *
  * @public
  */
 export class BaseTextInput extends FASTElement {
@@ -24,17 +36,6 @@ export class BaseTextInput extends FASTElement {
    */
   @attr
   public autocomplete?: string;
-
-  /**
-   * Indicates that the element should get focus after the page finishes loading.
-   * @see The {@link https://developer.mozilla.org/docs/Web/HTML/Element/input#autofocus | `autofocus`} attribute
-   *
-   * @public
-   * @remarks
-   * HTML Attribute: `autofocus`
-   */
-  @attr({ mode: 'boolean' })
-  public autofocus!: boolean;
 
   /**
    * The current value of the input.
@@ -71,9 +72,14 @@ export class BaseTextInput extends FASTElement {
    * @internal
    */
   public defaultSlottedNodesChanged(prev: Node[] | undefined, next: Node[] | undefined): void {
-    if (this.$fastController.isConnected) {
-      this.controlLabel.hidden = !next?.length;
-    }
+    Updates.enqueue(() => {
+      if (this.controlLabel) {
+        this.controlLabel.hidden = !next?.some(
+          node =>
+            node.nodeType === Node.ELEMENT_NODE || (node.nodeType === Node.TEXT_NODE && !!node.textContent?.trim()),
+        );
+      }
+    });
   }
 
   /**
@@ -304,7 +310,11 @@ export class BaseTextInput extends FASTElement {
    * @internal
    */
   public controlChanged(prev: HTMLInputElement | undefined, next: HTMLInputElement | undefined): void {
-    this.setValidity();
+    Updates.enqueue(() => {
+      if (this.$fastController.isConnected) {
+        this.setValidity();
+      }
+    });
   }
 
   /**
@@ -371,7 +381,7 @@ export class BaseTextInput extends FASTElement {
   public set value(value: string) {
     this.currentValue = value;
 
-    if (this.$fastController.isConnected) {
+    if (this.elementInternals && this.control) {
       this.control.value = value ?? '';
       this.setFormValue(value);
       this.setValidity();
@@ -399,19 +409,6 @@ export class BaseTextInput extends FASTElement {
    */
   public get form(): HTMLFormElement | null {
     return this.elementInternals.form;
-  }
-
-  /**
-   * Handles the internal control's `keypress` event.
-   *
-   * @internal
-   */
-  public beforeinputHandler(e: InputEvent): boolean | void {
-    if (e.inputType === 'insertLineBreak') {
-      this.implicitSubmit();
-    }
-
-    return true;
   }
 
   /**
@@ -458,6 +455,8 @@ export class BaseTextInput extends FASTElement {
 
   public connectedCallback(): void {
     super.connectedCallback();
+
+    this.tabIndex = Number(this.getAttribute('tabindex') ?? 0) < 0 ? -1 : 0;
 
     this.setFormValue(this.value);
     this.setValidity();
@@ -590,7 +589,7 @@ export class BaseTextInput extends FASTElement {
    * @internal
    */
   public setFormValue(value: File | string | FormData | null, state?: File | string | FormData | null): void {
-    this.elementInternals.setFormValue(value, value ?? state);
+    this.elementInternals?.setFormValue(value, value ?? state);
   }
 
   /**
@@ -603,7 +602,7 @@ export class BaseTextInput extends FASTElement {
    * @internal
    */
   public setValidity(flags?: Partial<ValidityState>, message?: string, anchor?: HTMLElement): void {
-    if (this.$fastController.isConnected && this.control) {
+    if (this.elementInternals && this.control) {
       if (this.disabled) {
         this.elementInternals.setValidity({});
         return;

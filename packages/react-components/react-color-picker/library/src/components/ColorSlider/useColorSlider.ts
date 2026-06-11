@@ -1,6 +1,6 @@
 'use client';
 
-import * as React from 'react';
+import type * as React from 'react';
 import { tinycolor } from '@ctrl/tinycolor';
 import {
   getPartitionedNativeProps,
@@ -17,7 +17,7 @@ import { MIN, HUE_MAX, MAX as COLOR_MAX } from '../../utils/constants';
 import { getPercent } from '../../utils/getPercent';
 import { createHsvColor } from '../../utils/createHsvColor';
 import { clampValue, type ChannelActions, adjustChannel } from '../../utils/adjustChannel';
-import { HsvColor } from '../../types/color';
+import type { HsvColor } from '../../types/color';
 import { INITIAL_COLOR_HSV } from '../../utils/constants';
 
 /**
@@ -33,7 +33,7 @@ export const useColorSlider_unstable = (
   props: ColorSliderProps,
   ref: React.Ref<HTMLInputElement>,
 ): ColorSliderState => {
-  'use no memo';
+  'use no memo'; // justified: compiler would optimize useColorSlider_unstable — manual opt-out to preserve runtime behavior
 
   const { dir } = useFluent();
   const onChangeFromContext = useColorPickerContextValue_unstable(ctx => ctx.requestChange);

@@ -65,7 +65,7 @@ const useRootStyles = makeStyles({
       },
     },
 
-    ':hover:active': {
+    ':hover:active,:active:focus-visible': {
       [`& .${splitButtonClassNames.primaryActionButton}`]: {
         borderRightColor: tokens.colorNeutralStrokeOnBrand,
       },
@@ -82,7 +82,7 @@ const useRootStyles = makeStyles({
         },
       },
 
-      ':hover:active': {
+      ':hover:active,:active:focus-visible': {
         [`& .${splitButtonClassNames.primaryActionButton}`]: {
           borderRightColor: 'Highlight',
         },
@@ -103,7 +103,7 @@ const useRootStyles = makeStyles({
       },
     },
 
-    ':hover:active': {
+    ':hover:active,:active:focus-visible': {
       [`& .${splitButtonClassNames.primaryActionButton}`]: {
         borderRightColor: tokens.colorTransparentBackgroundPressed,
       },
@@ -120,7 +120,7 @@ const useRootStyles = makeStyles({
       },
     },
 
-    ':hover:active': {
+    ':hover:active,:active:focus-visible': {
       [`& .${splitButtonClassNames.primaryActionButton}`]: {
         borderRightColor: tokens.colorTransparentBackgroundPressed,
       },
@@ -144,7 +144,7 @@ const useRootStyles = makeStyles({
       },
     },
 
-    ':hover:active': {
+    ':hover:active,:active:focus-visible': {
       [`& .${splitButtonClassNames.primaryActionButton}`]: {
         borderRightColor: tokens.colorNeutralStrokeDisabled,
       },
@@ -164,7 +164,7 @@ const useRootStyles = makeStyles({
         },
       },
 
-      ':hover:active': {
+      ':hover:active,:active:focus-visible': {
         [`& .${splitButtonClassNames.primaryActionButton}`]: {
           borderRightColor: 'GrayText',
         },
@@ -174,13 +174,12 @@ const useRootStyles = makeStyles({
 });
 
 export const useSplitButtonStyles_unstable = (state: SplitButtonState): SplitButtonState => {
-  'use no memo';
-
   const rootStyles = useRootStyles();
   const focusStyles = useFocusStyles();
 
   const { appearance, disabled, disabledFocusable } = state;
 
+  // eslint-disable-next-line react-hooks/immutability
   state.root.className = mergeClasses(
     splitButtonClassNames.root,
     rootStyles.base,
@@ -191,6 +190,7 @@ export const useSplitButtonStyles_unstable = (state: SplitButtonState): SplitBut
   );
 
   if (state.menuButton) {
+    // eslint-disable-next-line react-hooks/immutability
     state.menuButton.className = mergeClasses(
       splitButtonClassNames.menuButton,
       focusStyles.menuButton,
@@ -199,6 +199,7 @@ export const useSplitButtonStyles_unstable = (state: SplitButtonState): SplitBut
   }
 
   if (state.primaryActionButton) {
+    // eslint-disable-next-line react-hooks/immutability
     state.primaryActionButton.className = mergeClasses(
       splitButtonClassNames.primaryActionButton,
       focusStyles.primaryActionButton,

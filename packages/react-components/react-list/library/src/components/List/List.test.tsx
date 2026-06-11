@@ -2,10 +2,11 @@ import * as React from 'react';
 import { act, fireEvent, render, within } from '@testing-library/react';
 import { isConformant } from '../../testing/isConformant';
 import { List } from './List';
-import { ListProps } from './List.types';
+import type { ListProps } from './List.types';
 import { ListItem } from '../ListItem/ListItem';
-import { ListItemActionEventData } from '../ListItem/ListItem.types';
-import { EventHandler } from '@fluentui/react-utilities';
+import type { ListItemActionEventData } from '../ListItem/ListItem.types';
+import type { EventHandler } from '@fluentui/react-utilities';
+import { resetIdsForTests } from '@fluentui/react-utilities';
 
 function expectListboxItemSelected(item: HTMLElement, selected: boolean) {
   expect(item.getAttribute('aria-selected')).toBe(selected.toString());
@@ -58,8 +59,13 @@ describe('List', () => {
   // and false warnings about the mismatched roles because of tabster not working reliably in tests.
   const consoleWarn = jest.spyOn(console, 'warn').mockImplementation(() => jest.fn());
 
+  afterEach(() => {
+    resetIdsForTests();
+  });
+
   afterAll(() => {
     consoleWarn.mockRestore();
+    jest.clearAllMocks();
   });
 
   describe('rendering', () => {

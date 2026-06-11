@@ -1,8 +1,26 @@
 # Change Log - @fluentui/chart-utilities
 
-This log was last generated on Wed, 26 Nov 2025 09:34:50 GMT and should not be manually modified.
+This log was last generated on Tue, 26 May 2026 12:04:31 GMT and should not be manually modified.
 
 <!-- Start content -->
+
+## [1.1.39](https://github.com/microsoft/fluentui/tree/@fluentui/chart-utilities_v1.1.39)
+
+Tue, 26 May 2026 12:04:31 GMT 
+[Compare changes](https://github.com/microsoft/fluentui/compare/@fluentui/chart-utilities_v1.1.38..@fluentui/chart-utilities_v1.1.39)
+
+### Patches
+
+- refactor: centralize isSafeUrl and reuse across chart and utility consumers ([PR #36206](https://github.com/microsoft/fluentui/pull/36206) by dmytrokirpa@microsoft.com)
+
+## [1.1.38](https://github.com/microsoft/fluentui/tree/@fluentui/chart-utilities_v1.1.38)
+
+Wed, 10 Dec 2025 06:27:46 GMT 
+[Compare changes](https://github.com/microsoft/fluentui/compare/@fluentui/chart-utilities_v1.1.37..@fluentui/chart-utilities_v1.1.38)
+
+### Patches
+
+- fix: resolve minor gantt chart bugs ([PR #35543](https://github.com/microsoft/fluentui/pull/35543) by kumarkshitij@microsoft.com)
 
 ## [1.1.37](https://github.com/microsoft/fluentui/tree/@fluentui/chart-utilities_v1.1.37)
 

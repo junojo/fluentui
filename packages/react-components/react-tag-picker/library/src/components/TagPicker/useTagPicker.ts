@@ -3,13 +3,15 @@
 import * as React from 'react';
 import { elementContains, useEventCallback, useId, useMergedRefs } from '@fluentui/react-utilities';
 import type {
+  TagPickerBaseProps,
   TagPickerOnOpenChangeData,
   TagPickerOnOptionSelectData,
   TagPickerProps,
   TagPickerState,
 } from './TagPicker.types';
 import { optionClassNames } from '@fluentui/react-combobox';
-import { PositioningShorthandValue, resolvePositioningShorthand, usePositioning } from '@fluentui/react-positioning';
+import type { PositioningShorthandValue } from '@fluentui/react-positioning';
+import { resolvePositioningShorthand, usePositioning } from '@fluentui/react-positioning';
 import { useActiveDescendant } from '@fluentui/react-aria';
 import { useComboboxBaseState } from '@fluentui/react-combobox';
 
@@ -17,28 +19,16 @@ import { useComboboxBaseState } from '@fluentui/react-combobox';
 const fallbackPositions: PositioningShorthandValue[] = ['above', 'after', 'after-top', 'before', 'before-top'];
 
 /**
- * Create the state required to render Picker.
- *
- * The returned state can be modified with hooks such as usePickerStyles_unstable,
- * before being passed to renderPicker_unstable.
- *
- * @param props - props from this instance of Picker
+ * Create the base state required to render TagPicker, without floating-ui positioning.
+ * @param props - props from this instance of TagPicker (without `positioning`)
  */
-export const useTagPicker_unstable = (props: TagPickerProps): TagPickerState => {
+export const useTagPickerBase_unstable = (props: TagPickerBaseProps): TagPickerState => {
   const popoverId = useId('picker-listbox');
   const triggerInnerRef = React.useRef<HTMLInputElement | HTMLButtonElement>(null);
   const secondaryActionRef = React.useRef<HTMLSpanElement>(null);
   const tagPickerGroupRef = React.useRef<HTMLDivElement>(null);
-  const { positioning, size = 'medium', inline = false, noPopover = false } = props;
-
-  const { targetRef, containerRef } = usePositioning({
-    position: 'below' as const,
-    align: 'start' as const,
-    offset: { crossAxis: 0, mainAxis: 2 },
-    fallbackPositions,
-    matchTargetSize: 'width' as const,
-    ...resolvePositioningShorthand(positioning),
-  });
+  const passiveTargetRef = React.useRef<HTMLDivElement>(null);
+  const { size = 'medium', inline = false, noPopover = false, disableAutoFocus } = props;
 
   const {
     controller: activeDescendantController,
@@ -66,6 +56,7 @@ export const useTagPicker_unstable = (props: TagPickerProps): TagPickerState => 
       } as TagPickerOnOpenChangeData),
     ),
     activeDescendantController,
+    disableAutoFocus,
     editable: true,
     multiselect: true,
     size: 'medium',
@@ -81,10 +72,10 @@ export const useTagPicker_unstable = (props: TagPickerProps): TagPickerState => 
     noPopover,
     disabled: comboboxState.disabled,
     triggerRef: useMergedRefs(triggerInnerRef, activeParentRef),
-    popoverRef: useMergedRefs(listboxRef, containerRef),
+    popoverRef: useMergedRefs(listboxRef),
     secondaryActionRef,
     tagPickerGroupRef,
-    targetRef,
+    targetRef: passiveTargetRef,
     size,
     inline,
     open: comboboxState.open,
@@ -120,6 +111,35 @@ export const useTagPicker_unstable = (props: TagPickerProps): TagPickerState => 
     setOpen: comboboxState.setOpen,
     setValue: comboboxState.setValue,
     value: comboboxState.value,
+  };
+};
+
+/**
+ * Create the state required to render Picker.
+ *
+ * The returned state can be modified with hooks such as usePickerStyles_unstable,
+ * before being passed to renderPicker_unstable.
+ *
+ * @param props - props from this instance of Picker
+ */
+export const useTagPicker_unstable = (props: TagPickerProps): TagPickerState => {
+  const { positioning } = props;
+
+  const { targetRef, containerRef } = usePositioning({
+    position: 'below' as const,
+    align: 'start' as const,
+    offset: { crossAxis: 0, mainAxis: 2 },
+    fallbackPositions,
+    matchTargetSize: 'width' as const,
+    ...resolvePositioningShorthand(positioning),
+  });
+
+  const baseState = useTagPickerBase_unstable(props);
+
+  return {
+    ...baseState,
+    targetRef,
+    popoverRef: useMergedRefs(baseState.popoverRef, containerRef),
   };
 };
 

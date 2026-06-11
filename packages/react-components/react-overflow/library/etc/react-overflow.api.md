@@ -4,12 +4,12 @@
 
 ```ts
 
-import { ContextSelector } from '@fluentui/react-context-selector';
-import type { ObserveOptions } from '@fluentui/priority-overflow';
 import type { OnUpdateOverflow } from '@fluentui/priority-overflow';
 import type { OverflowDividerEntry } from '@fluentui/priority-overflow';
-import { OverflowGroupState } from '@fluentui/priority-overflow';
+import type { OverflowGroupState } from '@fluentui/priority-overflow';
 import type { OverflowItemEntry } from '@fluentui/priority-overflow';
+import type { OverflowOptions } from '@fluentui/priority-overflow';
+import type { OverflowSnapshot } from '@fluentui/priority-overflow';
 import * as React_2 from 'react';
 
 // @public (undocumented)
@@ -29,7 +29,7 @@ export interface OnOverflowChangeData extends OverflowState {
 }
 
 // @public
-export const Overflow: React_2.ForwardRefExoticComponent<Partial<Pick<ObserveOptions, "padding" | "overflowDirection" | "overflowAxis" | "minimumVisible" | "hasHiddenItems">> & {
+export const Overflow: React_2.ForwardRefExoticComponent<Partial<Pick<OverflowOptions, "padding" | "overflowDirection" | "overflowAxis" | "minimumVisible" | "hasHiddenItems">> & {
     children: React_2.ReactElement;
     onOverflowChange?: (ev: null, data: OverflowState) => void;
 } & React_2.RefAttributes<unknown>>;
@@ -44,15 +44,23 @@ export const OverflowItem: React_2.ForwardRefExoticComponent<OverflowItemProps &
 export type OverflowItemProps = {
     id: string;
     groupId?: string;
-    priority?: number;
     children: React_2.ReactElement;
-};
+} & ({
+    pinned?: boolean;
+    priority?: never;
+} | {
+    pinned?: never;
+    priority?: number;
+});
 
 // @public
-export type OverflowProps = Partial<Pick<ObserveOptions, 'overflowAxis' | 'overflowDirection' | 'padding' | 'minimumVisible' | 'hasHiddenItems'>> & {
+export type OverflowProps = Partial<Pick<OverflowOptions, 'overflowAxis' | 'overflowDirection' | 'padding' | 'minimumVisible' | 'hasHiddenItems'>> & {
     children: React_2.ReactElement;
     onOverflowChange?: (ev: null, data: OverflowState) => void;
 };
+
+// @public
+export const OverflowReorderObserver: React_2.FC;
 
 // @public (undocumented)
 export function useIsOverflowGroupVisible(id: string): OverflowGroupState;
@@ -61,15 +69,18 @@ export function useIsOverflowGroupVisible(id: string): OverflowGroupState;
 export function useIsOverflowItemVisible(id: string): boolean;
 
 // @internal (undocumented)
-export const useOverflowContainer: <TElement extends HTMLElement>(update: OnUpdateOverflow, options: Omit<ObserveOptions, "onUpdateOverflow">) => UseOverflowContainerReturn<TElement>;
+export const useOverflowContainer: <TElement extends HTMLElement>(update: OnUpdateOverflow, options: Omit<OverflowOptions, "onUpdateOverflow">) => UseOverflowContainerReturn<TElement>;
 
 // @internal (undocumented)
-export interface UseOverflowContainerReturn<TElement extends HTMLElement> extends Pick<OverflowContextValue, 'registerItem' | 'updateOverflow' | 'registerOverflowMenu' | 'registerDivider'> {
+export interface UseOverflowContainerReturn<TElement extends HTMLElement> extends Pick<OverflowContextValue, 'registerItem' | 'updateOverflow' | 'forceUpdateOverflow' | 'registerOverflowMenu' | 'registerDivider' | 'getSnapshot' | 'subscribe'> {
     containerRef: React_2.RefObject<TElement | null>;
 }
 
 // @internal (undocumented)
-export const useOverflowContext: <SelectedValue>(selector: ContextSelector<OverflowContextValue, SelectedValue>) => SelectedValue;
+export function useOverflowContext(): OverflowContextValue;
+
+// @internal (undocumented)
+export function useOverflowContext<SelectedValue>(selector: (context: OverflowContextValue) => SelectedValue): SelectedValue;
 
 // @public (undocumented)
 export const useOverflowCount: () => number;
@@ -78,7 +89,7 @@ export const useOverflowCount: () => number;
 export function useOverflowDivider<TElement extends HTMLElement>(groupId?: string): React_2.RefObject<TElement | null>;
 
 // @internal
-export function useOverflowItem<TElement extends HTMLElement>(id: string, priority?: number, groupId?: string): React_2.RefObject<TElement | null>;
+export function useOverflowItem<TElement extends HTMLElement>(id: string, priority?: number, groupId?: string, pinned?: boolean): React_2.RefObject<TElement | null>;
 
 // @public (undocumented)
 export function useOverflowMenu<TElement extends HTMLElement>(id?: string): {

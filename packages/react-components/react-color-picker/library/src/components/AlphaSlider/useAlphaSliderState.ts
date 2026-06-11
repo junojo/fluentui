@@ -1,6 +1,6 @@
 'use client';
 
-import * as React from 'react';
+import type * as React from 'react';
 import { tinycolor } from '@ctrl/tinycolor';
 import { clamp, useControllableState, useEventCallback } from '@fluentui/react-utilities';
 import { useFluent_unstable as useFluent } from '@fluentui/react-shared-contexts';
@@ -13,8 +13,6 @@ import { adjustToTransparency, calculateTransparencyValue, getSliderDirection } 
 import { createHsvColor } from '../../utils/createHsvColor';
 
 export const useAlphaSliderState_unstable = (state: AlphaSliderState, props: AlphaSliderProps): AlphaSliderState => {
-  'use no memo';
-
   const { dir } = useFluent();
   const onChangeFromContext = useColorPickerContextValue_unstable(ctx => ctx.requestChange);
   const colorFromContext = useColorPickerContextValue_unstable(ctx => ctx.color);
@@ -51,13 +49,16 @@ export const useAlphaSliderState_unstable = (state: AlphaSliderState, props: Alp
   };
 
   // Root props
+  // eslint-disable-next-line react-hooks/immutability
   state.root.style = {
     ...rootVariables,
     ...state.root.style,
   };
 
   // Input Props
+  // eslint-disable-next-line react-hooks/immutability
   state.input.value = clampedValue;
+  // eslint-disable-next-line react-hooks/immutability
   state.input.onChange = _onChange;
 
   return state;

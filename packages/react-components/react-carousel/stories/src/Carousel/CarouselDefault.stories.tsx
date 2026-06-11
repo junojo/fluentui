@@ -6,16 +6,14 @@ import {
   CarouselNavButton,
   CarouselNavContainer,
   CarouselViewport,
-  CarouselAnnouncerFunction,
   CarouselSlider,
 } from '@fluentui/react-components';
 import * as React from 'react';
-import type { JSXElement } from '@fluentui/react-components';
+import type { JSXElement, CarouselAnnouncerFunction } from '@fluentui/react-components';
 
 const useClasses = makeStyles({
   bannerCard: {
     alignContent: 'center',
-    borderRadius: tokens.borderRadiusLarge,
     height: '450px',
     textAlign: 'left',
     position: 'relative',
@@ -24,7 +22,6 @@ const useClasses = makeStyles({
     display: 'flex',
     flexDirection: 'column',
     gap: '8px',
-
     position: 'absolute',
     left: '10%',
     top: '25%',

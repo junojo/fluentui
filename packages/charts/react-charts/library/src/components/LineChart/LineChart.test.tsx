@@ -2,7 +2,8 @@
 import { render, screen, fireEvent, act } from '@testing-library/react';
 import * as React from 'react';
 import { FluentProvider } from '@fluentui/react-provider';
-import { LineChartPoints, LineChart } from './index';
+import type { LineChartPoints } from './index';
+import { LineChart } from './index';
 import '@testing-library/jest-dom';
 
 import {
@@ -19,27 +20,46 @@ const { Timezone } = require('../../../scripts/constants');
 expect.extend(toHaveNoViolations);
 
 const originalRAF = window.requestAnimationFrame;
+const originalGetComputedStyle = window.getComputedStyle;
+const originalGetBoundingClientRect = window.Element.prototype.getBoundingClientRect;
 
-/* function updateChartWidthAndHeight() {
+function updateChartWidthAndHeight() {
   jest.useFakeTimers();
   Object.defineProperty(window, 'requestAnimationFrame', {
     writable: true,
     value: (callback: FrameRequestCallback) => callback(0),
   });
-  window.HTMLElement.prototype.getBoundingClientRect = () =>
-    ({
-      bottom: 44,
-      height: 50,
-      left: 10,
-      right: 35.67,
-      top: 20,
-      width: 650,
-    } as DOMRect);
-} */
+  window.Element.prototype.getBoundingClientRect = jest.fn().mockReturnValue({
+    bottom: 44,
+    height: 50,
+    left: 10,
+    right: 35.67,
+    top: 20,
+    width: 650,
+    x: 10,
+    y: 20,
+  } as DOMRect);
+  window.getComputedStyle = jest.fn().mockImplementation(element => {
+    const style = originalGetComputedStyle(element);
+    return {
+      ...style,
+      marginTop: '0px',
+      marginBottom: '0px',
+      getPropertyValue: (prop: string) => {
+        if (prop === 'margin-top' || prop === 'margin-bottom') {
+          return '0px';
+        }
+        return style.getPropertyValue(prop);
+      },
+    } as CSSStyleDeclaration;
+  });
+}
 
 function sharedAfterEach() {
   jest.useRealTimers();
   window.requestAnimationFrame = originalRAF;
+  window.Element.prototype.getBoundingClientRect = originalGetBoundingClientRect;
+  window.getComputedStyle = originalGetComputedStyle;
 }
 
 const basicPoints: LineChartPoints[] = [
@@ -214,6 +234,7 @@ const tickValues = [
 ];
 
 describe('Line chart rendering', () => {
+  beforeEach(updateChartWidthAndHeight);
   afterEach(sharedAfterEach);
 
   testWithoutWait(
@@ -400,6 +421,9 @@ const eventAnnotationProps = {
 };
 
 describe('Line chart - Subcomponent line', () => {
+  beforeEach(updateChartWidthAndHeight);
+  afterEach(sharedAfterEach);
+
   testWithoutWait(
     'Should render the lines with the specified colors',
     LineChart,
@@ -426,6 +450,9 @@ describe('Line chart - Subcomponent line', () => {
 });
 
 describe('Line chart - Subcomponent legend', () => {
+  beforeEach(updateChartWidthAndHeight);
+  afterEach(sharedAfterEach);
+
   testWithoutWait(
     'Should highlight the corresponding Line on mouse over on legends',
     LineChart,
@@ -569,6 +596,9 @@ describe('Line chart - Subcomponent legend', () => {
 });
 
 describe('Line chart - Subcomponent Time Range', () => {
+  beforeEach(updateChartWidthAndHeight);
+  afterEach(sharedAfterEach);
+
   testWithWait(
     'Should render time range with sepcified data',
     LineChart,
@@ -606,10 +636,10 @@ describe('Line chart - Subcomponent xAxis Labels', () => {
     { data: dateChartPoints, showXAxisLablesTooltip: true },
     container => {
       // Arrange
-      const xAxisLabels = getById(container, /showDots/i);
+      const xAxisLabels = container.querySelectorAll('tspan');
       fireEvent.mouseOver(xAxisLabels[0]);
       // Assert
-      expect(getById(container, /showDots/i)[0]!.textContent!).toEqual('Febr...');
+      expect(xAxisLabels[0].textContent).toEqual('Febr...');
     },
     undefined,
     undefined,
@@ -645,6 +675,7 @@ describe('Line chart - Subcomponent Event', () => {
 });
 
 describe('Screen resolution', () => {
+  beforeEach(updateChartWidthAndHeight);
   afterEach(sharedAfterEach);
 
   testWithWait(
@@ -681,6 +712,7 @@ describe('Screen resolution', () => {
 });
 
 describe('Theme and accessibility', () => {
+  beforeEach(updateChartWidthAndHeight);
   afterEach(sharedAfterEach);
 
   test('Should reflect theme change', () => {
@@ -707,28 +739,31 @@ describe('Line chart - Accessibility', () => {
 });
 
 describe('LineChart snapShot testing', () => {
+  beforeEach(updateChartWidthAndHeight);
+  afterEach(sharedAfterEach);
+
   it('renders LineChart correctly', async () => {
-    let wrapper = render(<LineChart data={basicChartPoints} />);
+    const wrapper = render(<LineChart data={basicChartPoints} />);
     expect(wrapper).toMatchSnapshot();
   });
 
   it('renders hideLegend correctly', async () => {
-    let wrapper = render(<LineChart data={basicChartPoints} hideLegend={true} />);
+    const wrapper = render(<LineChart data={basicChartPoints} hideLegend={true} />);
     expect(wrapper).toMatchSnapshot();
   });
 
   it('renders hideTooltip correctly', async () => {
-    let wrapper = render(<LineChart data={basicChartPoints} hideTooltip={true} />);
+    const wrapper = render(<LineChart data={basicChartPoints} hideTooltip={true} />);
     expect(wrapper).toMatchSnapshot();
   });
 
   it('renders enabledLegendsWrapLines correctly', async () => {
-    let wrapper = render(<LineChart data={basicChartPoints} enabledLegendsWrapLines={true} />);
+    const wrapper = render(<LineChart data={basicChartPoints} enabledLegendsWrapLines={true} />);
     expect(wrapper).toMatchSnapshot();
   });
 
   it('renders showXAxisLablesTooltip correctly', async () => {
-    let wrapper = render(<LineChart data={basicChartPoints} showXAxisLablesTooltip={true} />);
+    const wrapper = render(<LineChart data={basicChartPoints} showXAxisLablesTooltip={true} />);
     expect(wrapper).toMatchSnapshot();
   });
 
@@ -744,12 +779,12 @@ describe('LineChart snapShot testing', () => {
       },
     );
 
-    let wrapper = render(<LineChart data={basicChartPoints} wrapXAxisLables={true} />);
+    const wrapper = render(<LineChart data={basicChartPoints} wrapXAxisLables={true} />);
     expect(wrapper).toMatchSnapshot();
   });
 
   it('renders yAxisTickFormat correctly', async () => {
-    let wrapper = render(<LineChart data={basicChartPoints} yAxisTickFormat={'.1f'} />);
+    const wrapper = render(<LineChart data={basicChartPoints} yAxisTickFormat={'.1f'} />);
     expect(wrapper).toMatchSnapshot();
   });
 
@@ -766,40 +801,44 @@ describe('LineChart snapShot testing', () => {
     ];
 
     delete points[0].color;
-    let wrapper = render(<LineChart data={basicChartPoints} />);
+    const wrapper = render(<LineChart data={basicChartPoints} />);
     expect(wrapper).toMatchSnapshot();
   });
 });
 
 describe('LineChart - basic props', () => {
+  beforeEach(updateChartWidthAndHeight);
   afterEach(sharedAfterEach);
 
   it('Should not mount legend when hideLegend true ', () => {
-    let wrapper = render(<LineChart data={basicChartPoints} hideLegend={true} />);
+    const wrapper = render(<LineChart data={basicChartPoints} hideLegend={true} />);
     const hideLegendDOM = wrapper!.container.querySelectorAll('[class^="legendContainer"]');
     expect(hideLegendDOM.length).toBe(0);
   });
 
   it('Should mount legend when hideLegend false ', () => {
-    let wrapper = render(<LineChart data={basicChartPoints} hideLegend={false} />);
+    const wrapper = render(<LineChart data={basicChartPoints} hideLegend={false} />);
     const hideLegendDOM = wrapper!.container.querySelectorAll('[class^="legendContainer"]');
     expect(hideLegendDOM).toBeDefined();
   });
 
   it('Should mount callout when hideTootip false ', () => {
-    let wrapper = render(<LineChart data={basicChartPoints} />);
+    const wrapper = render(<LineChart data={basicChartPoints} />);
     const hideLegendDOM = wrapper!.container.querySelectorAll('[class^="ms-Layer"]');
     expect(hideLegendDOM).toBeDefined();
   });
 
   it('Should not mount callout when hideTootip true ', () => {
-    let wrapper = render(<LineChart data={basicChartPoints} hideTooltip={true} />);
+    const wrapper = render(<LineChart data={basicChartPoints} hideTooltip={true} />);
     const hideLegendDOM = wrapper!.container.querySelectorAll('[class^="ms-Layer"]');
     expect(hideLegendDOM.length).toBe(0);
   });
 });
 
 describe('Render calling with respective to props', () => {
+  beforeEach(updateChartWidthAndHeight);
+  afterEach(sharedAfterEach);
+
   it('No prop changes', () => {
     const props = {
       data: basicChartPoints,
@@ -830,8 +869,11 @@ describe('Render calling with respective to props', () => {
 });
 
 describe('Render empty chart aria label div when chart is empty', () => {
+  beforeEach(updateChartWidthAndHeight);
+  afterEach(sharedAfterEach);
+
   it('No empty chart aria label div rendered', () => {
-    let wrapper = render(<LineChart data={basicChartPoints} />);
+    const wrapper = render(<LineChart data={basicChartPoints} />);
     const renderedDOM = wrapper!.container.querySelectorAll('[aria-label="Graph has no data to display"]');
     expect(renderedDOM!.length).toBe(0);
   });
@@ -841,7 +883,7 @@ describe('Render empty chart aria label div when chart is empty', () => {
       chartTitle: 'EmptyLineChart',
       lineChartData: [],
     };
-    let wrapper = render(<LineChart data={emptyChartPoints} />);
+    const wrapper = render(<LineChart data={emptyChartPoints} />);
     const renderedDOM = wrapper!.container.querySelectorAll('[aria-label="Graph has no data to display"]');
     expect(renderedDOM!.length).toBe(1);
   });
@@ -851,6 +893,7 @@ describe('LineChart - mouse events', () => {
   let root: HTMLDivElement | null;
 
   beforeEach(() => {
+    updateChartWidthAndHeight();
     root = document.createElement('div');
     document.body.appendChild(root);
   });
@@ -864,11 +907,9 @@ describe('LineChart - mouse events', () => {
     }
   });
 
-  // @FIXME: this tests is failing with jest 29.7.0
   it('Should render callout correctly on mouseover', () => {
     // Render the LineChart and simulate mouseover using React Testing Library
     const { container } = render(<LineChart data={basicChartPoints} />, { container: root! });
-    // Find the first line element by id pattern
     const line = container.querySelector('line[id^="lineID"]');
     expect(line).toBeDefined();
     act(() => {

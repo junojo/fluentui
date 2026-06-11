@@ -1,8 +1,48 @@
 # Change Log - @fluentui/react-file-type-icons
 
-This log was last generated on Wed, 26 Nov 2025 09:34:51 GMT and should not be manually modified.
+This log was last generated on Mon, 11 May 2026 10:02:37 GMT and should not be manually modified.
 
 <!-- Start content -->
+
+## [8.18.0](https://github.com/microsoft/fluentui/tree/@fluentui/react-file-type-icons_v8.18.0)
+
+Mon, 11 May 2026 10:02:37 GMT 
+[Compare changes](https://github.com/microsoft/fluentui/compare/@fluentui/react-file-type-icons_v8.17.0..@fluentui/react-file-type-icons_v8.18.0)
+
+### Minor changes
+
+- Support for new markdown, "special folder" filetype icon (default "shortcuts" folder) and other fixes ([PR #35945](https://github.com/microsoft/fluentui/pull/35945) by caperez@microsoft.com)
+- Bump @fluentui/style-utilities to v8.15.1 ([commit](https://github.com/microsoft/fluentui/commit/04bf7a7dd2b5c8f6963d3bf63187017e96c57a10) by beachball)
+
+## [8.17.0](https://github.com/microsoft/fluentui/tree/@fluentui/react-file-type-icons_v8.17.0)
+
+Thu, 26 Feb 2026 18:07:04 GMT 
+[Compare changes](https://github.com/microsoft/fluentui/compare/@fluentui/react-file-type-icons_v8.16.0..@fluentui/react-file-type-icons_v8.17.0)
+
+### Minor changes
+
+- Updating .md filetype to use rich text document icon ([PR #35740](https://github.com/microsoft/fluentui/pull/35740) by caperez@microsoft.com)
+- Bump @fluentui/style-utilities to v8.15.0 ([commit](https://github.com/microsoft/fluentui/commit/cbf6cd22febb874c8e360def57b140ea42291902) by beachball)
+
+## [8.16.0](https://github.com/microsoft/fluentui/tree/@fluentui/react-file-type-icons_v8.16.0)
+
+Tue, 27 Jan 2026 05:19:01 GMT 
+[Compare changes](https://github.com/microsoft/fluentui/compare/@fluentui/react-file-type-icons_v8.15.3..@fluentui/react-file-type-icons_v8.16.0)
+
+### Minor changes
+
+- adding filetypeicon for campaign item ([PR #35650](https://github.com/microsoft/fluentui/pull/35650) by caperez@microsoft.com)
+- Bump @fluentui/style-utilities to v8.14.0 ([PR #35643](https://github.com/microsoft/fluentui/pull/35643) by beachball)
+
+## [8.15.3](https://github.com/microsoft/fluentui/tree/@fluentui/react-file-type-icons_v8.15.3)
+
+Wed, 10 Dec 2025 06:27:57 GMT 
+[Compare changes](https://github.com/microsoft/fluentui/compare/@fluentui/react-file-type-icons_v8.15.2..@fluentui/react-file-type-icons_v8.15.3)
+
+### Patches
+
+- chore: remove unused eslint-disable directives ([PR #35518](https://github.com/microsoft/fluentui/pull/35518) by vgenaev@gmail.com)
+- Bump @fluentui/style-utilities to v8.13.6 ([PR #35532](https://github.com/microsoft/fluentui/pull/35532) by beachball)
 
 ## [8.15.2](https://github.com/microsoft/fluentui/tree/@fluentui/react-file-type-icons_v8.15.2)
 

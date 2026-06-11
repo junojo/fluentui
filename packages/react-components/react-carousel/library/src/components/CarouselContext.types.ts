@@ -1,7 +1,9 @@
 import type { EventData } from '@fluentui/react-utilities';
-import * as React from 'react';
+import type * as React from 'react';
 
 import type { CarouselUpdateData } from '../Carousel';
+
+export type CarouselAppearance = 'flat' | 'elevated';
 
 export type CarouselIndexChangeData = (
   | EventData<'click', React.MouseEvent<HTMLButtonElement | HTMLAnchorElement>>
@@ -17,6 +19,7 @@ export type CarouselIndexChangeData = (
 
 export type CarouselContextValue = {
   activeIndex: number;
+  appearance?: CarouselAppearance;
   circular: boolean;
   selectPageByElement: (event: React.FocusEvent, element: HTMLElement, jump?: boolean) => number;
   selectPageByDirection: (

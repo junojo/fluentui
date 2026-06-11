@@ -17,8 +17,10 @@ import type {
   TreeItemLayoutProps,
   TreeItemLayoutState,
 } from './TreeItemLayout.types';
-import { Checkbox, CheckboxProps } from '@fluentui/react-checkbox';
-import { Radio, RadioProps } from '@fluentui/react-radio';
+import type { CheckboxProps } from '@fluentui/react-checkbox';
+import { Checkbox } from '@fluentui/react-checkbox';
+import type { RadioProps } from '@fluentui/react-radio';
+import { Radio } from '@fluentui/react-radio';
 import { TreeItemChevron } from '../TreeItemChevron';
 import { useArrowNavigationGroup, useIsNavigatingWithKeyboard } from '@fluentui/react-tabster';
 import { useFluent_unstable as useFluent } from '@fluentui/react-shared-contexts';
@@ -36,8 +38,6 @@ export const useTreeItemLayout_unstable = (
   props: TreeItemLayoutProps,
   ref: React.Ref<HTMLElement>,
 ): TreeItemLayoutState => {
-  'use no memo';
-
   const { main, iconAfter, iconBefore } = props;
 
   const layoutRef = useTreeItemContext_unstable(ctx => ctx.layoutRef);
@@ -67,8 +67,10 @@ export const useTreeItemLayout_unstable = (
   const isBranch = useTreeItemContext_unstable(ctx => ctx.itemType === 'branch');
 
   // FIXME: Asserting is required here, as converting this to RefObject on context type would be a breaking change
+  // eslint-disable-next-line react-hooks/refs
   assertIsRefObject(treeItemRef);
   // FIXME: Asserting is required here, as converting this to RefObject on context type would be a breaking change
+  // eslint-disable-next-line react-hooks/refs
   assertIsRefObject(subtreeRef);
 
   const setActionsVisibleIfNotFromSubtree = React.useCallback(
